@@ -354,10 +354,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </td>
                 <td class="px-6 py-4 text-right">
-                    <button onclick="viewStudentDetails('${student.id}')" 
-                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors">
-                        View Details
-                    </button>
+                    <div class="flex items-center justify-end gap-2">
+                        <button onclick="viewStudentDetails('${student.id}')" 
+                            class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors">
+                            View Details
+                        </button>
+                        <button onclick="editStudent('${student.id}')" 
+                            class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg transition-colors">
+                            Edit
+                        </button>
+                    </div>
                 </td>
             `;
             studentTableBody.appendChild(row);
@@ -432,6 +438,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 
                 <div class="flex gap-3">
+                    <button onclick="editStudent('${student.id}')" 
+                        class="flex-1 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition-all">
+                        ✏️ Edit Student
+                    </button>
                     <button onclick="deleteStudent('${student.id}')" 
                         class="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all">
                         Delete Student
@@ -481,6 +491,99 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     };
+
+    // === EDIT STUDENT ===
+    let editingStudentId = null;
+
+    window.editStudent = function (studentId) {
+        const student = students.find(s => s.id === studentId);
+        if (!student) return;
+
+        editingStudentId = studentId;
+
+        // Close detail modal if open
+        const detailModal = document.getElementById('modal-student-detail');
+        if (detailModal) {
+            detailModal.classList.add('hidden');
+            detailModal.classList.remove('flex');
+        }
+
+        // Pre-fill form
+        const modal = document.getElementById('modal-edit-student');
+        if (!modal) return;
+
+        modal.querySelector('[name="name"]').value = student.name || '';
+        modal.querySelector('[name="enrollment"]').value = student.enrollment || '';
+        modal.querySelector('[name="address"]').value = student.address || '';
+        modal.querySelector('[name="phone"]').value = student.phone || '';
+        modal.querySelector('[name="parentPhone"]').value = student.parentPhone || '';
+        modal.querySelector('[name="department"]').value = student.department || '';
+        modal.querySelector('[name="passValidity"]').value = student.passValidity || '';
+
+        const yearSelect = modal.querySelector('[name="year"]');
+        if (yearSelect) yearSelect.value = student.year || '1st Year';
+
+        // Populate bus options in edit modal
+        const editBusSelect = modal.querySelector('[name="assignedBusId"]');
+        if (editBusSelect) {
+            editBusSelect.innerHTML = '<option value="">Select a route...</option>';
+            buses.forEach(bus => {
+                const option = document.createElement('option');
+                option.value = bus.id;
+                option.textContent = `Bus ${bus.number} - ${bus.route}`;
+                if (bus.id === student.assignedBusId) option.selected = true;
+                editBusSelect.appendChild(option);
+            });
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    };
+
+    // Close edit modal
+    const closeEditStudentModalBtn = document.getElementById('close-edit-student-modal-btn');
+    const cancelEditStudentBtn = document.getElementById('cancel-edit-student-btn');
+
+    function closeEditStudentModal() {
+        const modal = document.getElementById('modal-edit-student');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        editingStudentId = null;
+    }
+
+    if (closeEditStudentModalBtn) closeEditStudentModalBtn.addEventListener('click', closeEditStudentModal);
+    if (cancelEditStudentBtn) cancelEditStudentBtn.addEventListener('click', closeEditStudentModal);
+
+    const formEditStudent = document.getElementById('form-edit-student');
+    if (formEditStudent) {
+        formEditStudent.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!editingStudentId) return;
+
+            const formData = new FormData(e.target);
+            try {
+                await db.collection('users').doc(editingStudentId).update({
+                    name: formData.get('name'),
+                    enrollment: formData.get('enrollment'),
+                    address: formData.get('address') || '',
+                    phone: formData.get('phone') || '',
+                    parentPhone: formData.get('parentPhone') || '',
+                    department: formData.get('department') || '',
+                    year: formData.get('year') || '1st Year',
+                    assignedBusId: formData.get('assignedBusId'),
+                    passValidity: formData.get('passValidity'),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert('✅ Student updated successfully!');
+                closeEditStudentModal();
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        });
+    }
 
     // === ADD STUDENT MODAL ===
     const addStudentBtn = document.getElementById('add-student-btn');
@@ -1001,4 +1104,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
