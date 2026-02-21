@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMBUS CONNECT - Dashboard</title>
+    
+    <!-- !! IMPORTANT: AUTH GUARD !! -->
+    <script src="auth-guard.js"></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+    <div class="min-h-screen">
+        <!-- Modern Header Component -->
+        <header class="glass-effect shadow-lg sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 7.6 16 5 12 5s-6.7 2.6-8.5 6.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2"/><path d="M12 17.5V5"/><path d="M2 17.5h10.5"/><path d="M15 17.5h5"/><circle cx="7" cy="17.5" r="2.5"/><circle cx="17" cy="17.5" r="2.5"/></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">CAMBUS CONNECT</h1>
+                        <p id="student-name-header" class="text-xs text-gray-500"></p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <!-- NEW FEATURE: Quick Actions Dropdown -->
+                    <button id="quick-actions-btn" class="p-2 hover:bg-gray-100 rounded-lg transition-colors relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    
+                    <button id="menu-button" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden border-t border-gray-200">
+                <div class="max-w-7xl mx-auto px-4 py-2">
+                    <button id="logout-button" class="flex items-center space-x-2 w-full px-4 py-3 hover:bg-gray-100 rounded-lg transition-colors text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Modern Navbar Component -->
+        <nav class="glass-effect shadow-sm sticky top-[68px] z-40">
+            <div class="max-w-7xl mx-auto px-4">
+                <div id="nav-tabs" class="flex overflow-x-auto space-x-1 py-2 no-scrollbar">
+                    <a href="home.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md">Home</a>
+                    <a href="bus-pass.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Bus Pass</a>
+                    <a href="track.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Track</a>
+                    <a href="notifications.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Alerts</a>
+                    <a href="lost-found.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Lost & Found</a>
+                    <a href="profile.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Profile</a>
+                    <a href="help.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Help</a>
+                    <a href="search.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Search</a>
+                    <a href="support.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Support</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main id="main-content" class="max-w-7xl mx-auto px-4 py-6">
+            <div class="space-y-6">
+                
+                <!-- Welcome Banner with Live Bus Info -->
+                <div class="gradient-bg rounded-2xl p-8 text-white shadow-2xl card-hover animate-slideIn">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h2 id="welcome-message" class="text-3xl font-bold mb-2"></h2>
+                            <p class="text-white/90 text-lg mb-4">Your next bus is arriving in approximately <span id="eta-minutes" class="font-bold">8</span> minutes.</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                                <div class="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/30">
+                                    <p class="text-xs text-white/80 mb-1">Your Route</p>
+                                    <p id="home-route" class="font-bold text-lg"></p>
+                                </div>
+                                <div class="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/30">
+                                    <p class="text-xs text-white/80 mb-1">Pass Valid Until</p>
+                                    <p id="home-validity" class="font-bold text-lg"></p>
+                                </div>
+                                <!-- NEW FEATURE: Bus Status Indicator -->
+                                <div class="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/30">
+                                    <p class="text-xs text-white/80 mb-1">Bus Status</p>
+                                    <p id="bus-status" class="font-bold text-lg flex items-center">
+                                        <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                                        On Time
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- NEW FEATURE: Live Bus Animation -->
+                        <div class="hidden md:block ml-4">
+                            <div class="w-32 h-32 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="animate-pulse">
+                                    <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 7.6 16 5 12 5s-6.7 2.6-8.5 6.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2"/>
+                                    <circle cx="7" cy="17.5" r="2.5"/>
+                                    <circle cx="17" cy="17.5" r="2.5"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW FEATURE: Statistics Dashboard -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Total Trips This Month -->
+                    <div class="glass-effect rounded-xl p-6 card-hover animate-slideIn" style="animation-delay: 0.1s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium mb-1">Trips This Month</p>
+                                <p id="stat-trips" class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                            </div>
+                        </div>
+                        <p class="text-xs text-green-600 mt-2">↑ 12% from last month</p>
+                    </div>
+                    
+                    <!-- Average Wait Time -->
+                    <div class="glass-effect rounded-xl p-6 card-hover animate-slideIn" style="animation-delay: 0.2s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium mb-1">Avg Wait Time</p>
+                                <p id="stat-wait" class="text-2xl font-bold text-gray-800">5 min</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                        </div>
+                        <p class="text-xs text-green-600 mt-2">↓ 2 min improvement</p>
+                    </div>
+                    
+                    <!-- On-Time Rate -->
+                    <div class="glass-effect rounded-xl p-6 card-hover animate-slideIn" style="animation-delay: 0.3s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium mb-1">On-Time Rate</p>
+                                <p id="stat-ontime" class="text-2xl font-bold text-gray-800">94%</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                        </div>
+                        <p class="text-xs text-purple-600 mt-2">Excellent performance</p>
+                    </div>
+                    
+                    <!-- NEW FEATURE: Carbon Footprint Saved -->
+                    <div class="glass-effect rounded-xl p-6 card-hover animate-slideIn" style="animation-delay: 0.4s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium mb-1">CO₂ Saved</p>
+                                <p id="stat-carbon" class="text-2xl font-bold text-gray-800">45 kg</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </div>
+                        </div>
+                        <p class="text-xs text-green-600 mt-2">🌱 Great for environment!</p>
+                    </div>
+                </div>
+
+                <!-- Quick Access Shortcuts with Modern Design -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                        <span class="w-1 h-6 bg-white rounded-full mr-3"></span>
+                        Quick Actions
+                    </h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="home-shortcuts">
+                        <!-- Shortcut buttons will be rendered here by JS -->
+                    </div>
+                </div>
+
+                <!-- NEW FEATURE: Upcoming Schedule Widget -->
+                <div class="glass-effect rounded-xl p-6 shadow-lg card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-indigo-600"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Today's Schedule
+                        </h3>
+                        <button class="text-xs text-indigo-600 font-medium hover:text-indigo-800">View All</button>
+                    </div>
+                    <div id="schedule-widget" class="space-y-3">
+                        <!-- Schedule items will be rendered here by JS -->
+                    </div>
+                </div>
+
+                <!-- Recent Updates Section with Modern Cards -->
+                <div class="glass-effect rounded-xl p-6 shadow-lg card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-indigo-600"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            Recent Updates
+                        </h3>
+                        <a href="notifications.html" class="text-xs text-indigo-600 font-medium hover:text-indigo-800">View All</a>
+                    </div>
+                    <div class="space-y-3" id="home-notifications">
+                        <!-- Recent notifications will be rendered here by JS -->
+                    </div>
+                </div>
+
+                <!-- NEW FEATURE: Weather Widget -->
+                <div class="glass-effect rounded-xl p-6 shadow-lg card-hover">
+                    <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-indigo-600"><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                        Today's Weather
+                    </h3>
+                    <div id="weather-widget" class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-3xl font-bold text-gray-800">28°C</p>
+                                <p class="text-sm text-gray-500">Sunny & Clear</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-600">Perfect for commuting!</p>
+                            <p class="text-xs text-gray-400 mt-1">No rain expected today</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW FEATURE: Quick Tips Section -->
+                <div class="glass-effect rounded-xl p-6 shadow-lg card-hover border-l-4 border-indigo-600">
+                    <h3 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-indigo-600"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                        Pro Tip of the Day
+                    </h3>
+                    <p id="daily-tip" class="text-sm text-gray-700">Arrive 5 minutes early at your stop to ensure you don't miss your bus. Track it live for real-time updates!</p>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- NEW FEATURE: Quick Actions Floating Panel -->
+        <div id="quick-actions-panel" class="hidden fixed top-20 right-4 glass-effect rounded-xl shadow-2xl p-4 w-64 z-50 animate-slideIn border border-gray-200">
+            <h4 class="font-bold text-gray-800 mb-3 text-sm flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-indigo-600"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                Quick Actions
+            </h4>
+            <div class="space-y-2">
+                <button id="report-issue-btn" class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-indigo-50 transition-colors flex items-center text-sm group border border-transparent hover:border-indigo-200">
+                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-red-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-800">Report Issue</p>
+                        <p class="text-xs text-gray-500">Bus problems or delays</p>
+                    </div>
+                </button>
+                <button id="emergency-btn" class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-indigo-50 transition-colors flex items-center text-sm group border border-transparent hover:border-indigo-200">
+                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-orange-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-800">Emergency Contact</p>
+                        <p class="text-xs text-gray-500">Call support hotline</p>
+                    </div>
+                </button>
+                <button id="download-pass-btn" class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-indigo-50 transition-colors flex items-center text-sm group border border-transparent hover:border-indigo-200">
+                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-800">Download Pass</p>
+                        <p class="text-xs text-gray-500">Save as PDF/Image</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts for this page -->
+    <script src="firebase-config.js"></script>
+    <script src="main.js"></script> <!-- Shared script for header/logout -->
+    <script src="home.js"></script> <!-- Page-specific script -->
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMBUS CONNECT - Support Center</title>
+    
+    <!-- !! IMPORTANT: AUTH GUARD !! -->
+    <script src="auth-guard.js"></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    
+   
+</head>
+<body>
+
+    <div class="min-h-screen">
+        <!-- Modern Header Component -->
+        <header class="glass-effect shadow-lg sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 7.6 16 5 12 5s-6.7 2.6-8.5 6.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2"/><path d="M12 17.5V5"/><path d="M2 17.5h10.5"/><path d="M15 17.5h5"/><circle cx="7" cy="17.5" r="2.5"/><circle cx="17" cy="17.5" r="2.5"/></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">CAMBUS CONNECT</h1>
+                        <p id="student-name-header" class="text-xs text-gray-500"></p>
+                    </div>
+                </div>
+                <button id="menu-button" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden border-t border-gray-200">
+                <div class="max-w-7xl mx-auto px-4 py-2">
+                    <button id="logout-button" class="flex items-center space-x-2 w-full px-4 py-3 hover:bg-gray-100 rounded-lg transition-colors text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Modern Navbar Component -->
+        <nav class="glass-effect shadow-sm sticky top-[68px] z-40">
+            <div class="max-w-7xl mx-auto px-4">
+                <div id="nav-tabs" class="flex overflow-x-auto space-x-1 py-2 no-scrollbar">
+                    <a href="home.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Home</a>
+                    <a href="bus-pass.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Bus Pass</a>
+                    <a href="track.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Track</a>
+                    <a href="notifications.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Alerts</a>
+                    <a href="lost-found.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Lost & Found</a>
+                    <a href="profile.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Profile</a>
+                    <a href="help.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Help</a>
+                    <a href="search.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Search</a>
+                    <a href="support.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md">Support</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main id="main-content" class="max-w-7xl mx-auto px-4 py-6">
+            <div class="space-y-6">
+                
+                <!-- Header Banner -->
+                <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-8 text-white shadow-2xl card-hover animate-slideIn">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-3xl font-bold mb-2">Support Center</h2>
+                                <p class="text-white/90">We're here to help! Report issues or ask questions.</p>
+                            </div>
+                        </div>
+                        <!-- NEW FEATURE: Live Support Status -->
+                        <div class="hidden md:block bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/30">
+                            <p class="text-xs text-white/80 mb-1">Support Status</p>
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                                <p class="font-bold">Available 24/7</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW FEATURE: Quick Statistics -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="glass-effect rounded-xl p-6 card-hover animate-slideIn" style="animation-delay: 0.1s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium mb-1">Total Queries</p>
+                                <p id="stat-total" class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-effect rounded-xl p-6 card-hover animate-slideIn" style="animation-delay: 0.2s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium mb-1">Pending</p>
+                                <p id="stat-pending" class="text-2xl font-bold text-orange-600">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-effect rounded-xl p-6 card-hover animate-slideIn" style="animation-delay: 0.3s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium mb-1">Resolved</p>
+                                <p id="stat-resolved" class="text-2xl font-bold text-green-600">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-effect rounded-xl p-6 card-hover animate-slideIn" style="animation-delay: 0.4s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium mb-1">Avg Response</p>
+                                <p id="stat-response" class="text-2xl font-bold text-purple-600">--</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW FEATURE: Common Issues Quick Access -->
+                <div class="glass-effect rounded-xl p-6 shadow-lg card-hover animate-slideIn" style="animation-delay: 0.5s">
+                    <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-indigo-600"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        Common Issues & Quick Solutions
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="faq-section">
+                        <!-- FAQ items will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Submit New Query Form -->
+                <div class="glass-effect rounded-xl p-8 shadow-lg card-hover animate-slideIn" style="animation-delay: 0.6s">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2 flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
+                            <path d="M12 20h9"/>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                        </svg>
+                        <span>Submit New Query</span>
+                    </h3>
+                    <p class="text-gray-600 mb-6">Can't find your answer? Submit a detailed query and our team will respond shortly.</p>
+                    
+                    <form id="support-form" class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
+                            <select name="category" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition bg-white">
+                                <option value="">Select issue category...</option>
+                                <option value="Bus Delay">🕐 Bus Delay</option>
+                                <option value="Bus Not Arrived">🚫 Bus Not Arrived</option>
+                                <option value="Route Issue">🗺️ Route Issue</option>
+                                <option value="Driver Behavior">👤 Driver Behavior</option>
+                                <option value="Bus Condition">🔧 Bus Condition</option>
+                                <option value="Pass Issue">🎫 Pass Issue</option>
+                                <option value="Safety Concern">⚠️ Safety Concern</option>
+                                <option value="Feedback">💬 Feedback/Suggestion</option>
+                                <option value="Other">❓ Other</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">Priority Level *</label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <label class="relative flex items-center justify-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-500 transition">
+                                    <input type="radio" name="priority" value="Low" required class="sr-only peer">
+                                    <div class="text-center peer-checked:text-green-600">
+                                        <div class="text-2xl mb-1">🟢</div>
+                                        <div class="font-semibold">Low</div>
+                                        <div class="text-xs text-gray-500">Not urgent</div>
+                                    </div>
+                                    <div class="absolute inset-0 border-2 border-green-500 rounded-xl opacity-0 peer-checked:opacity-100 transition bg-green-50 peer-checked:bg-opacity-50"></div>
+                                </label>
+                                <label class="relative flex items-center justify-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-orange-500 transition">
+                                    <input type="radio" name="priority" value="Medium" class="sr-only peer">
+                                    <div class="text-center peer-checked:text-orange-600">
+                                        <div class="text-2xl mb-1">🟡</div>
+                                        <div class="font-semibold">Medium</div>
+                                        <div class="text-xs text-gray-500">Important</div>
+                                    </div>
+                                    <div class="absolute inset-0 border-2 border-orange-500 rounded-xl opacity-0 peer-checked:opacity-100 transition bg-orange-50 peer-checked:bg-opacity-50"></div>
+                                </label>
+                                <label class="relative flex items-center justify-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-red-500 transition">
+                                    <input type="radio" name="priority" value="High" class="sr-only peer">
+                                    <div class="text-center peer-checked:text-red-600">
+                                        <div class="text-2xl mb-1">🔴</div>
+                                        <div class="font-semibold">High</div>
+                                        <div class="text-xs text-gray-500">Urgent</div>
+                                    </div>
+                                    <div class="absolute inset-0 border-2 border-red-500 rounded-xl opacity-0 peer-checked:opacity-100 transition bg-red-50 peer-checked:bg-opacity-50"></div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Subject *</label>
+                            <input type="text" name="subject" required placeholder="Brief description of your issue" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition" maxlength="100">
+                            <p class="text-xs text-gray-500 mt-1">Maximum 100 characters</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
+                            <textarea name="description" required rows="5" placeholder="Provide detailed information about your query or issue..." class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition resize-none" maxlength="1000"></textarea>
+                            <p class="text-xs text-gray-500 mt-1">Maximum 1000 characters</p>
+                        </div>
+
+                        <!-- NEW FEATURE: File Attachment (UI Only) -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Attach Screenshot (Optional)</label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-indigo-400 transition cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-gray-400">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                <p class="text-sm text-gray-600 font-medium">Click to upload or drag and drop</p>
+                                <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB (Coming Soon)</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start space-x-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 flex-shrink-0 mt-0.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 16v-4"/>
+                                    <path d="M12 8h.01"/>
+                                </svg>
+                                <div>
+                                    <p class="text-sm font-semibold text-blue-800 mb-1">Your contact information will be automatically included</p>
+                                    <p class="text-xs text-blue-700">Admin will see your name, enrollment ID, phone number, and assigned bus route.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submit-btn" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" x2="11" y1="2" y2="13"/>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
+                            <span>Submit Query</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- My Queries Section -->
+                <div class="glass-effect rounded-xl p-8 shadow-lg card-hover animate-slideIn" style="animation-delay: 0.7s">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" x2="8" y1="13" y2="13"/>
+                                <line x1="16" x2="8" y1="17" y2="17"/>
+                                <polyline points="10 9 9 9 8 9"/>
+                            </svg>
+                            <span>My Queries</span>
+                        </h3>
+                        <div class="flex items-center space-x-3">
+                            <span id="query-count" class="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Loading...</span>
+                            <!-- NEW FEATURE: Filter Dropdown -->
+                            <select id="filter-status" class="text-sm border-2 border-gray-200 rounded-lg px-3 py-1 focus:border-indigo-500 focus:outline-none">
+                                <option value="all">All Queries</option>
+                                <option value="Pending">Pending Only</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Resolved">Resolved</option>
+                                <option value="Closed">Closed</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="queries-list" class="space-y-4">
+                        <!-- Loading state -->
+                        <div class="text-center py-12">
+                            <div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                            <p class="text-gray-500 text-sm">Loading your queries...</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts for this page -->
+    <script src="firebase-config.js"></script>
+    <script src="main.js"></script>
+    <script src="support.js"></script>
+</body>
+</html>

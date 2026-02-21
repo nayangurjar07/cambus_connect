@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMBUS CONNECT - Admin Panel</title>
+
+    <!-- !! IMPORTANT: AUTH GUARD !! -->
+    <script src="auth-guard.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+
+
+</head>
+
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 min-h-screen">
+
+    <div class="min-h-screen flex">
+
+        <!-- Enhanced Sidebar -->
+        <aside
+            class="w-72 bg-white/80 backdrop-blur-xl border-r border-slate-200/60 flex flex-col fixed h-screen z-40 shadow-xl">
+            <!-- Logo Section -->
+            <div class="p-6 border-b border-slate-200/60">
+                <div class="flex items-center gap-3 mb-4">
+                    <div
+                        class="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 transform hover:scale-105 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-white">
+                            <path
+                                d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 7.6 16 5 12 5s-6.7 2.6-8.5 6.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2" />
+                            <circle cx="7" cy="17.5" r="2.5" />
+                            <circle cx="17" cy="17.5" r="2.5" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="font-black text-xl text-slate-800 tracking-tight">CAMBUS</h1>
+                        <p class="text-xs font-semibold text-blue-600">Admin Control</p>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-100">
+                    <p class="text-xs font-semibold text-slate-600 mb-1">Welcome back,</p>
+                    <p id="admin-name-display" class="text-sm font-bold text-slate-800">Administrator</p>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider px-3 mb-3">Dashboard</p>
+
+                <!-- Bus Fleet Tab -->
+                <button id="tab-buses"
+                    class="tab-button w-full flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 group">
+                    <div
+                        class="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 7.6 16 5 12 5s-6.7 2.6-8.5 6.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2" />
+                            <circle cx="7" cy="17.5" r="2.5" />
+                            <circle cx="17" cy="17.5" r="2.5" />
+                        </svg>
+                    </div>
+                    <span>Bus Fleet</span>
+                </button>
+
+                <!-- Students Tab -->
+                <button id="tab-students"
+                    class="tab-button w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl font-semibold group">
+                    <div
+                        class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                    </div>
+                    <span>Students</span>
+                </button>
+
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider px-3 mb-3 mt-6">Operations</p>
+
+                <!-- Live Tracking Tab -->
+                <button id="tab-tracking"
+                    class="tab-button w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl font-semibold group">
+                    <div
+                        class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                        </svg>
+                    </div>
+                    <span>Live Tracking</span>
+                </button>
+
+                <!-- Notifications Tab -->
+                <button id="tab-notifications"
+                    class="tab-button w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl font-semibold group">
+                    <div
+                        class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                    </div>
+                    <span>Notifications</span>
+                </button>
+
+                <!-- Lost & Found Tab -->
+                <button id="tab-lost-found"
+                    class="tab-button w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl font-semibold group">
+                    <div
+                        class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.35-4.35" />
+                        </svg>
+                    </div>
+                    <span>Lost & Found</span>
+                </button>
+
+                <!-- Support Queries Tab -->
+                <button id="tab-support"
+                    class="tab-button w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl font-semibold group relative">
+                    <div
+                        class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                    </div>
+                    <span>Support</span>
+                    <span id="pending-badge"
+                        class="hidden ml-auto px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">0</span>
+                </button>
+            </nav>
+
+            <!-- Logout Section -->
+            <div class="p-4 border-t border-slate-200/60">
+                <button id="logout-btn"
+                    class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl font-semibold transition-all group">
+                    <div
+                        class="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center group-hover:bg-red-100 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" x2="9" y1="12" y2="12" />
+                        </svg>
+                    </div>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 ml-72 p-8">
+
+            <!-- VIEW: BUS FLEET -->
+            <div id="view-buses" class="view-container">
+                <!-- Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-3xl font-black text-slate-800">Fleet Management</h2>
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full">
+                                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                <span class="text-sm font-bold">Live Updates</span>
+                            </div>
+                            <button id="add-bus-btn"
+                                class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all transform hover:scale-105">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <line x1="12" x2="12" y1="5" y2="19" />
+                                    <line x1="5" x2="19" y1="12" y2="12" />
+                                </svg>
+                                <span>Add New Bus</span>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-slate-600">Monitor and control your bus fleet in real-time</p>
+                </div>
+
+                <!-- Bus Grid -->
+                <div id="admin-buses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Loading shimmer -->
+                    <div class="col-span-full space-y-4">
+                        <div class="h-48 bg-slate-200 rounded-2xl shimmer"></div>
+                        <div class="h-48 bg-slate-200 rounded-2xl shimmer"></div>
+                        <div class="h-48 bg-slate-200 rounded-2xl shimmer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: STUDENTS -->
+            <div id="view-students" class="view-container hidden">
+                <!-- Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-3xl font-black text-slate-800 mb-2">Student Directory</h2>
+                            <p class="text-slate-600">Manage student registrations and bus assignments</p>
+                        </div>
+                        <button id="add-student-btn"
+                            class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all transform hover:scale-105">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <line x1="12" x2="12" y1="5" y2="19" />
+                                <line x1="5" x2="19" y1="12" y2="12" />
+                            </svg>
+                            <span>Add Student</span>
+                        </button>
+                    </div>
+
+                    <!-- Search and Count -->
+                    <div
+                        class="flex items-center gap-4 bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/60 p-4">
+                        <div class="flex-1">
+                            <input type="text" id="search-student" placeholder="Search by name or enrollment..."
+                                class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                        </div>
+                        <div class="px-4 py-2 bg-blue-100 text-blue-700 rounded-xl">
+                            <span class="text-sm font-bold">Total: <span id="student-count">0</span> students</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Students Table -->
+                <div
+                    class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/60 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gradient-to-r from-slate-50 to-blue-50 border-b-2 border-slate-200">
+                                <tr>
+                                    <th class="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-wider">
+                                        Student</th>
+                                    <th class="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-wider">
+                                        Email</th>
+                                    <th class="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-wider">
+                                        Enrollment</th>
+                                    <th class="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-wider">
+                                        Route</th>
+                                    <th class="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-wider">
+                                        Pass Validity</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-wider text-right">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-table-body" class="divide-y divide-slate-100 bg-white">
+                                <!-- Rows injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: NOTIFICATIONS -->
+            <div id="view-notifications" class="view-container hidden">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-3xl font-black text-slate-800 mb-2">Notification Center</h2>
+                        <p class="text-slate-600">Broadcast updates to all students</p>
+                    </div>
+                    <button id="add-notification-btn"
+                        class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 transition-all transform hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" x2="12" y1="5" y2="19" />
+                            <line x1="5" x2="19" y1="12" y2="12" />
+                        </svg>
+                        <span>Send Notification</span>
+                    </button>
+                </div>
+
+                <!-- Notifications List -->
+                <div id="notifications-list" class="space-y-4">
+                    <!-- Notifications rendered here -->
+                </div>
+            </div>
+
+            <!-- VIEW: LOST & FOUND -->
+            <div id="view-lost-found" class="view-container hidden">
+                <!-- Header -->
+                <div class="mb-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-2">Lost & Found Reports</h2>
+                    <p class="text-slate-600">Monitor all lost and found items</p>
+                </div>
+
+                <!-- Lost & Found List -->
+                <div id="lost-found-list" class="space-y-4">
+                    <!-- Lost items rendered here -->
+                </div>
+            </div>
+
+            <!-- VIEW: LIVE TRACKING -->
+            <div id="view-live-tracking" class="view-container hidden">
+                <!-- Header -->
+                <div class="mb-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-2">Live Bus Tracking</h2>
+                    <p class="text-slate-600">Real-time bus location updates</p>
+                </div>
+
+                <!-- Map Container -->
+                <div
+                    class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/60 overflow-hidden mb-6">
+                    <div id="map-container" class="w-full h-96 bg-gradient-to-br from-slate-100 to-blue-50 relative">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="text-center">
+                                <div
+                                    class="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="text-white">
+                                        <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                                    </svg>
+                                </div>
+                                <p class="text-slate-700 font-bold text-lg mb-2">Live Map Coming Soon</p>
+                                <p class="text-sm text-slate-500">Integrate Google Maps API for real-time tracking</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bus Status List -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tracking-buses-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- VIEW: SUPPORT QUERIES -->
+            <div id="view-support" class="view-container hidden">
+                <!-- Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-3xl font-black text-slate-800">Support Center</h2>
+                        <div class="flex items-center gap-3">
+                            <span id="total-queries"
+                                class="px-4 py-2 bg-blue-100 text-blue-700 rounded-xl text-sm font-bold">
+                                0 Queries
+                            </span>
+                            <button id="refresh-queries-btn"
+                                class="p-2 hover:bg-slate-100 rounded-xl transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="text-slate-600">
+                                    <polyline points="23 4 23 10 17 10" />
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-slate-600">View and respond to student queries and issues</p>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div
+                    class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/60 overflow-hidden mb-6">
+                    <div class="flex border-b border-slate-200 overflow-x-auto">
+                        <button
+                            class="filter-tab px-6 py-4 text-sm font-bold border-b-3 border-blue-600 text-blue-600 whitespace-nowrap transition-all"
+                            data-status="all">
+                            All
+                        </button>
+                        <button
+                            class="filter-tab px-6 py-4 text-sm font-bold border-b-3 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50 whitespace-nowrap transition-all"
+                            data-status="Pending">
+                            Pending
+                        </button>
+                        <button
+                            class="filter-tab px-6 py-4 text-sm font-bold border-b-3 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50 whitespace-nowrap transition-all"
+                            data-status="In Progress">
+                            In Progress
+                        </button>
+                        <button
+                            class="filter-tab px-6 py-4 text-sm font-bold border-b-3 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50 whitespace-nowrap transition-all"
+                            data-status="Resolved">
+                            Resolved
+                        </button>
+                    </div>
+
+                    <!-- Queries List -->
+                    <div id="support-queries-list" class="p-6 space-y-4 max-h-[600px] overflow-y-auto custom-scrollbar">
+                        <div class="text-center py-12">
+                            <div
+                                class="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4">
+                            </div>
+                            <p class="text-slate-500 font-semibold">Loading queries...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ADD BUS MODAL -->
+    <div id="modal-add-bus"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-3xl w-full max-w-2xl shadow-2xl transform">
+            <div class="p-8 border-b border-slate-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-black text-slate-800">Add New Bus</h3>
+                        <p class="text-slate-600 text-sm mt-1">Register a new bus to the fleet</p>
+                    </div>
+                    <button id="close-bus-modal-btn"
+                        class="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-xl flex items-center justify-center transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <form id="form-add-bus" class="p-8">
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Bus Number</label>
+                        <input name="number" required placeholder="e.g., A1, B2"
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Route Name</label>
+                        <input name="route" required placeholder="e.g., Downtown Circuit"
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    </div>
+                </div>
+                <div class="mb-8">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Driver Name</label>
+                    <input name="driver" required placeholder="e.g., John Smith"
+                        class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Driver Phone</label>
+                        <input name="phone" placeholder="e.g., +1 555-0100"
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Conductor Name</label>
+                        <input name="conductor" placeholder="e.g., Alex Brown"
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Conductor Phone</label>
+                        <input name="conductorPhone" placeholder="e.g., +1 555-0101"
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Tracking Device ID</label>
+                        <input name="trackerId" placeholder="e.g., DEV-22018"
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="button" id="cancel-bus-modal-btn"
+                        class="flex-1 px-6 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="flex-1 px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all">
+                        Add Bus
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD STUDENT MODAL -->
+    <div id="modal-add-student"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div
+            class="modal-content bg-white rounded-3xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="p-8 border-b border-slate-200 sticky top-0 bg-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-black text-slate-800">Register New Student</h3>
+                        <p class="text-slate-600 text-sm mt-1">Add student details and assign bus route</p>
+                    </div>
+                    <button id="close-student-modal-btn"
+                        class="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-xl flex items-center justify-center transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <form id="form-add-student" class="p-8">
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Full Name *</label>
+                        <input name="name" required
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Enrollment ID *</label>
+                        <input name="enrollment" required placeholder="e.g., 0818CS221001"
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Email Address *</label>
+                    <input name="email" type="email" required placeholder="e.g., student@indoreinstitute.com"
+                        class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    <p class="text-xs text-slate-500 mt-1">Must be unique. Will be used for login.</p>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Password *</label>
+                    <div class="relative">
+                        <input id="password-input" name="password" type="password" required minlength="6"
+                            placeholder="Minimum 6 characters"
+                            class="w-full px-4 py-3 pr-12 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                        <button type="button" id="toggle-password"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-xl hover:scale-110 transition-transform">👁️</button>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">Student will use this password to login.</p>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Address</label>
+                    <input name="address"
+                        class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Student Phone</label>
+                        <input name="phone" type="tel"
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Parent Phone</label>
+                        <input name="parentPhone" type="tel"
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Department</label>
+                        <input name="department" placeholder="e.g., Computer Science"
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Year</label>
+                        <select name="year"
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none bg-white transition-all">
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Assign Bus Route *</label>
+                    <select name="assignedBusId" id="input-assign-bus" required
+                        class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none bg-white transition-all">
+                        <option value="">Select a route...</option>
+                    </select>
+                </div>
+                <div class="mb-8">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Pass Valid Until *</label>
+                    <input name="passValidity" type="date" required
+                        class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all">
+                    <p class="text-xs text-slate-500 mt-1">Student cannot login after this date.</p>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="button" id="cancel-student-modal-btn"
+                        class="flex-1 px-6 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="flex-1 px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all">
+                        Register Student
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD NOTIFICATION MODAL -->
+    <div id="modal-add-notification"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-3xl w-full max-w-2xl shadow-2xl transform">
+            <div class="p-8 border-b border-slate-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-black text-slate-800">Send Notification</h3>
+                        <p class="text-slate-600 text-sm mt-1">Broadcast message to all students</p>
+                    </div>
+                    <button id="close-notification-modal-btn"
+                        class="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-xl flex items-center justify-center transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <form id="form-add-notification" class="p-8">
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Notification Type</label>
+                    <select name="type"
+                        class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-green-500 focus:ring-4 focus:ring-green-100 outline-none bg-white transition-all">
+                        <option value="info">Information</option>
+                        <option value="alert">Alert</option>
+                        <option value="delay">Delay</option>
+                        <option value="crowd">Crowd Update</option>
+                    </select>
+                </div>
+                <div class="mb-8">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Message</label>
+                    <textarea name="message" required rows="6" placeholder="Enter notification message..."
+                        class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-green-500 focus:ring-4 focus:ring-green-100 outline-none resize-none transition-all"></textarea>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="button" id="cancel-notification-modal-btn"
+                        class="flex-1 px-6 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="flex-1 px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 transition-all">
+                        Send Now
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- STUDENT DETAIL MODAL -->
+    <div id="modal-student-detail"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div
+            class="modal-content bg-white rounded-3xl w-full max-w-3xl shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="p-8 border-b border-slate-200 sticky top-0 bg-white z-10">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-black text-slate-800">Student Details</h3>
+                        <p class="text-slate-600 text-sm mt-1">Complete information</p>
+                    </div>
+                    <button id="close-student-detail-btn"
+                        class="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-xl flex items-center justify-center transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-8" id="student-detail-content">
+                <!-- Content will be populated by JavaScript -->
+                <div class="text-center py-12">
+                    <div
+                        class="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4">
+                    </div>
+                    <p class="text-slate-500 font-semibold">Loading student data...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESPONSE MODAL (for Support Queries) -->
+    <div id="modal-respond-query"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div
+            class="modal-content bg-white rounded-3xl w-full max-w-3xl shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="p-8 border-b border-slate-200 sticky top-0 bg-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-black text-slate-800">Respond to Query</h3>
+                        <p class="text-slate-600 text-sm mt-1">Send response to student</p>
+                    </div>
+                    <button id="close-respond-modal-btn"
+                        class="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-xl flex items-center justify-center transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-8">
+                <div id="modal-query-details" class="mb-8"></div>
+                <form id="form-respond-query" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Update Status</label>
+                        <select id="response-status" required
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none bg-white transition-all">
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                            <option value="Closed">Closed</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Your Response</label>
+                        <textarea id="response-message" required rows="6"
+                            placeholder="Write your response to the student..."
+                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none resize-none transition-all"></textarea>
+                    </div>
+                    <div class="flex gap-4 pt-4">
+                        <button type="button" id="cancel-respond-btn"
+                            class="flex-1 px-6 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="flex-1 px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all">
+                            Send Response
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="admin.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMBUS CONNECT - Digital Bus Pass</title>
+    
+    <!-- !! IMPORTANT: AUTH GUARD !! -->
+    <script src="auth-guard.js"></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+
+    <!-- NEW FEATURE: QRCode.js Library for Real QR Code Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body>
+
+    <div class="min-h-screen">
+        <!-- Modern Header Component -->
+        <header class="glass-effect shadow-lg sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 7.6 16 5 12 5s-6.7 2.6-8.5 6.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2"/><path d="M12 17.5V5"/><path d="M2 17.5h10.5"/><path d="M15 17.5h5"/><circle cx="7" cy="17.5" r="2.5"/><circle cx="17" cy="17.5" r="2.5"/></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">CAMBUS CONNECT</h1>
+                        <p id="student-name-header" class="text-xs text-gray-500"></p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <!-- NEW FEATURE: Share Pass Button -->
+                    <button id="share-pass-btn" class="p-2 hover:bg-gray-100 rounded-lg transition-colors relative" title="Share Pass">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    </button>
+                    
+                    <button id="menu-button" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden border-t border-gray-200">
+                <div class="max-w-7xl mx-auto px-4 py-2">
+                    <button id="logout-button" class="flex items-center space-x-2 w-full px-4 py-3 hover:bg-gray-100 rounded-lg transition-colors text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Modern Navbar Component -->
+        <nav class="glass-effect shadow-sm sticky top-[68px] z-40">
+            <div class="max-w-7xl mx-auto px-4">
+                <div id="nav-tabs" class="flex overflow-x-auto space-x-1 py-2 no-scrollbar">
+                    <a href="home.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Home</a>
+                    <a href="bus-pass.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md">Bus Pass</a>
+                    <a href="track.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Track</a>
+                    <a href="notifications.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Alerts</a>
+                    <a href="lost-found.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Lost & Found</a>
+                    <a href="profile.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Profile</a>
+                    <a href="help.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Help</a>
+                    <a href="search.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Search</a>
+                    <a href="support.html" class="px-4 py-2 rounded-lg whitespace-nowrap transition-all text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-indigo-600">Support</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main id="main-content" class="max-w-7xl mx-auto px-4 py-6">
+            <div class="space-y-6">
+                
+                <!-- Page Title with Actions -->
+                <div class="flex items-center justify-between animate-slideIn">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Digital Bus Pass</h2>
+                        <p class="text-white/80 mt-1">Your authenticated travel document</p>
+                    </div>
+                    <!-- NEW FEATURE: Download Options -->
+                    <div class="flex space-x-2">
+                        <button id="download-pdf-btn" class="glass-effect px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-white transition-all flex items-center space-x-2 shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>PDF</span>
+                        </button>
+                        <button id="download-image-btn" class="glass-effect px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-white transition-all flex items-center space-x-2 shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            <span>Image</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Pass Card -->
+                <div class="glass-effect rounded-2xl p-8 shadow-2xl card-hover animate-slideIn pass-card-3d" style="animation-delay: 0.1s">
+                    
+                    <!-- NEW FEATURE: Pass Status Banner -->
+                    <div class="mb-6 p-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl text-white flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-bold text-lg">Pass Active</p>
+                                <p class="text-sm text-white/80">Verified & Ready to Use</p>
+                            </div>
+                        </div>
+                        <div id="pass-validity-badge" class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+                            <p class="text-xs text-white/80">Valid Until</p>
+                            <p class="font-bold">31 Dec 2025</p>
+                        </div>
+                    </div>
+
+                    <!-- Digital Pass Display -->
+                    <div class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-8 mb-6 relative overflow-hidden holographic">
+                        <!-- Background Pattern -->
+                        <div class="absolute inset-0 opacity-10">
+                            <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="1"/>
+                                </pattern>
+                                <rect width="100%" height="100%" fill="url(#grid)" />
+                            </svg>
+                        </div>
+                        
+                        <!-- Pass Content -->
+                        <div class="relative z-10">
+                            <!-- QR Code Section -->
+                            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                                <!-- QR Code -->
+                                <div class="bg-white rounded-2xl p-6 shadow-2xl">
+                                    <div id="qrcode-container" class="w-48 h-48 flex items-center justify-center">
+                                        <!-- Real QR Code will be generated here by JS -->
+                                    </div>
+                                    <p id="pass-qrcode-text" class="text-center text-xs text-gray-600 font-mono mt-3"></p>
+                                </div>
+                                
+                                <!-- Pass Info -->
+                                <div class="flex-1 text-white">
+                                    <div class="mb-4">
+                                        <p class="text-sm text-white/80 uppercase tracking-wider mb-1">Student Name</p>
+                                        <p id="pass-name" class="text-2xl font-bold"></p>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p class="text-xs text-white/80 uppercase tracking-wider mb-1">College ID</p>
+                                            <p id="pass-college-id" class="font-semibold text-lg"></p>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-white/80 uppercase tracking-wider mb-1">Route</p>
+                                            <p id="pass-route" class="font-semibold text-lg"></p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- NEW FEATURE: Digital Signature -->
+                                    <div class="mt-6 pt-4 border-t border-white/20">
+                                        <p class="text-xs text-white/60">Digitally Signed & Verified</p>
+                                        <div class="flex items-center space-x-2 mt-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-300"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                                            <p class="text-sm text-white/80">Authenticated by CAMBUS CONNECT</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NEW FEATURE: Barcode Alternative -->
+                    <div class="bg-white rounded-xl p-6 mb-6 border-2 border-dashed border-gray-200">
+                        <p class="text-sm text-gray-600 mb-3 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 5v14"/><path d="M8 5v14"/><path d="M12 5v14"/><path d="M17 5v14"/><path d="M21 5v14"/></svg>
+                            Alternative Barcode
+                        </p>
+                        <div id="barcode-container" class="flex justify-center space-x-1">
+                            <!-- Barcode will be generated here -->
+                        </div>
+                    </div>
+
+                    <!-- Pass Details Grid -->
+                    <div id="pass-details" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <!-- Pass details rendered here by JS -->
+                    </div>
+
+                    <!-- Check-in Status Section -->
+                    <div class="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-700 font-medium">Check-in Status</p>
+                                    <p class="text-xs text-gray-500">Today's bus boarding verification</p>
+                                </div>
+                            </div>
+                            <span id="checkin-status" class="font-semibold px-4 py-2 rounded-full text-sm"></span>
+                        </div>
+                        
+                        <!-- NEW FEATURE: Check-in History -->
+                        <div id="checkin-history" class="mt-4 space-y-2">
+                            <!-- Recent check-ins will be displayed here -->
+                        </div>
+                        
+                        <button id="checkin-button" class="mt-4 w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 rounded-xl text-sm font-semibold hover:from-blue-600 hover:to-indigo-700 transition-all shadow-md flex items-center justify-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <span>Simulate Check-in (Demo)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- NEW FEATURE: Usage Statistics -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass-effect rounded-xl p-6 card-hover animate-slideIn" style="animation-delay: 0.2s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium mb-1">Times Scanned</p>
+                                <p id="scan-count" class="text-3xl font-bold text-gray-800">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>
+                            </div>
+                        </div>
+                        <p class="text-xs text-green-600 mt-2">This month</p>
+                    </div>
+                    
+                    <div class="glass-effect rounded-xl p-6 card-hover animate-slideIn" style="animation-delay: 0.3s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium mb-1">Last Check-in</p>
+                                <p id="last-checkin" class="text-lg font-bold text-gray-800">Never</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                        </div>
+                        <p id="last-checkin-time" class="text-xs text-gray-500 mt-2">--</p>
+                    </div>
+                    
+                    <div class="glass-effect rounded-xl p-6 card-hover animate-slideIn" style="animation-delay: 0.4s">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium mb-1">Pass Status</p>
+                                <p class="text-lg font-bold text-green-600">ACTIVE</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </div>
+                        </div>
+                        <p id="days-remaining" class="text-xs text-purple-600 mt-2">Valid for 323 days</p>
+                    </div>
+                </div>
+
+                <!-- NEW FEATURE: Quick Actions -->
+                <div class="glass-effect rounded-xl p-6 shadow-lg card-hover animate-slideIn" style="animation-delay: 0.5s">
+                    <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-indigo-600"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        Quick Actions
+                    </h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <button id="add-to-wallet-btn" class="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl hover:from-blue-100 hover:to-indigo-100 transition-all text-left border border-blue-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                            <p class="text-sm font-medium text-gray-800">Add to Wallet</p>
+                            <p class="text-xs text-gray-500 mt-1">Apple/Google Pay</p>
+                        </button>
+                        
+                        <button id="print-pass-btn" class="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl hover:from-green-100 hover:to-emerald-100 transition-all text-left border border-green-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                            <p class="text-sm font-medium text-gray-800">Print Pass</p>
+                            <p class="text-xs text-gray-500 mt-1">Physical copy</p>
+                        </button>
+                        
+                        <button id="report-issue-btn" class="p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl hover:from-orange-100 hover:to-amber-100 transition-all text-left border border-orange-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <p class="text-sm font-medium text-gray-800">Report Issue</p>
+                            <p class="text-xs text-gray-500 mt-1">Pass problems</p>
+                        </button>
+                        
+                        <button id="renew-pass-btn" class="p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl hover:from-purple-100 hover:to-violet-100 transition-all text-left border border-purple-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                            <p class="text-sm font-medium text-gray-800">Renew Pass</p>
+                            <p class="text-xs text-gray-500 mt-1">Extend validity</p>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts for this page -->
+    <script src="firebase-config.js"></script>
+    <script src="main.js"></script>
+    <script src="bus-pass.js"></script>
+</body>
+</html>
